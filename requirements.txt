@@ -1,0 +1,2 @@
+openai>=1.95.1
+langgraph>=0.6.2
