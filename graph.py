@@ -88,9 +88,16 @@ def programmer_node(state: GraphState) -> GraphState:
 		state.get("code", ""), 
 		state.get("run_result")
 	)
-	response_str = programmer.call_llm(input_text)
-	data = json.loads(response_str)
+	try:
+		response_str = programmer.call_llm(input_text)
+		data = json.loads(response_str)
+	except (ValueError, json.JSONDecodeError) as e:
+		logger.error(f"{_label('programmer')} {_failure('LLM error')}: {e}")
+		raise
 	new_code = str(data.get("code", ""))
+	if not new_code.strip():
+		logger.error(f"{_label('programmer')} {_failure('empty code returned')}")
+		raise ValueError("LLM returned empty code")
 	_log_preview(f"{_label('programmer')} produced code", new_code)
 	return {
 		"code": new_code,

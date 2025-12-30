@@ -64,9 +64,7 @@ def create_response_schema() -> Dict[str, Any]:
 
 def call_llm(input_text: str) -> str:
     client = get_azure_openai_client()
-
     response = client.chat.completions.create(
-        model=get_azure_deployment(),
         messages=[
             {
                 "role": "system",
@@ -80,7 +78,8 @@ def call_llm(input_text: str) -> str:
             {"role": "user", "content": input_text},
         ],
         response_format=create_response_schema(),
-        max_completion_tokens=2000,
+        max_completion_tokens=16000,
+        model=get_azure_deployment(),
     )
 
     return response.choices[0].message.content or ""
